@@ -1,3 +1,4 @@
+// Creates a portable, compiled and linked shader program.
 // Copyright (C) 2022 Natalie Wiggins
 //
 // This program is free software: you can redistribute it and/or modify
@@ -26,6 +27,24 @@
 namespace demonia
 {
 
+GLuint compile_shader(const char *src, GLenum type)
+{
+    GLuint shader = glCreateShader(type);
+    glShaderSource(shader, 1, &src, NULL);
+    glCompileShader(shader);
+
+    int success;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        char info_log[GL_INFO_LOG_LENGTH];
+        glGetShaderInfoLog(shader, GL_INFO_LOG_LENGTH, NULL, info_log);
+        throw ShaderCompileException(info_log, type);
+    }
+
+    return shader;
+}
+
 ShaderProgram::ShaderProgram(const char *vertex_src, const char *fragment_src)
 {
     GLuint vertex_shader = compile_shader(vertex_src, GL_VERTEX_SHADER);
@@ -52,24 +71,6 @@ ShaderProgram::ShaderProgram(const char *vertex_src, const char *fragment_src)
 ShaderProgram::~ShaderProgram()
 {
     glDeleteProgram(id);
-}
-
-GLuint compile_shader(const char *src, GLenum type)
-{
-    GLuint shader = glCreateShader(type);
-    glShaderSource(shader, 1, &src, NULL);
-    glCompileShader(shader);
-
-    int success;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        char info_log[GL_INFO_LOG_LENGTH];
-        glGetShaderInfoLog(shader, GL_INFO_LOG_LENGTH, NULL, info_log);
-        throw ShaderCompileException(info_log, type);
-    }
-
-    return shader;
 }
 
 }; // namespace demonia

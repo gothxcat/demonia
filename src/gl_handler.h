@@ -26,6 +26,7 @@
 namespace demonia
 {
 
+// Handles GL initialisation and rendering.
 class GlHandler
 {
 public:
@@ -38,8 +39,8 @@ public:
     static const char *fragment_shader_source;
     static const Vertex vertices[];
 
-    // Initialises GL, starts graphics rendering, and handles user interaction;
-    // deinitialises GL upon an exit interaction. Returns an exit code.
+    // Initialises GL and starts graphics rendering; deinitialises GL upon an
+    // exit signal. Returns an exit code.
     static int start();
 
 private:

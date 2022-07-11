@@ -24,6 +24,7 @@
 namespace demonia
 {
 
+// Creates a portable, compiled and linked shader program.
 class ShaderProgram
 {
 public:
@@ -67,11 +68,6 @@ inline void ShaderProgram::set_uniform_float(const char *name, float value) cons
 {
     glUniform1i(glGetUniformLocation(id, name), value);
 }
-
-// Compiles a shader of a specified type from its GLSL source code. Returns the
-// identifier of the shader. If compilation fails, throws an exception of type
-// `demonia::ShaderCompileException` (see `gl_exception.h`).
-unsigned int compile_shader(const char *src, GLenum type);
 
 }; // namespace demonia
 

@@ -22,9 +22,9 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(demonia_CODE_SOURCE_DIR ${demonia_SOURCE_DIR}/src)
 
 set(demonia_SOURCES
-    demonia.cc
     gl_exception.cc
     gl_handler.cc
+    main.cc
     shader.cc)
 
 list(TRANSFORM demonia_SOURCES
