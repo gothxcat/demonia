@@ -31,7 +31,7 @@ public:
     // links them into a program. If a shader fails to compile, throws an
     // exception of type `demonia::ShaderCompileException`. If linking of
     // shaders into a program fails, throws an exception of type
-    // `demonia::ProgramLinkException (see `gl_exception.h`).
+    // `demonia::ProgramLinkException` (see `gl_exception.h`).
     ShaderProgram(const char *vertex_src, const char *fragment_src);
 
     ~ShaderProgram();

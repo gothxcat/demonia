@@ -45,6 +45,7 @@ const char *GlHandler::fragment_shader_source =
 #include "shaders/fragment.glsl"
 ;
 
+// 2D triangle
 const Vertex GlHandler::vertices[] = {
     // x,y,z                r,g,b
     {  0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f }, // bottom right
