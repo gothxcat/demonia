@@ -35,7 +35,7 @@ const unsigned int GlHandler::k_gl_version_major = 3;
 const unsigned int GlHandler::k_gl_version_minor = 3;
 const unsigned int GlHandler::k_initial_window_width = 640;
 const unsigned int GlHandler::k_initial_window_height = 480;
-const char *GlHandler::k_title = "Demonia";
+const char *GlHandler::k_window_title = "Demonia";
 
 const char *GlHandler::vertex_shader_source =
 #include "shaders/vertex.glsl"
@@ -68,8 +68,7 @@ inline void log_exception(std::exception &e) noexcept
 
 int GlHandler::start()
 {
-    // Check
-
+    // Pre-initialisation check
     if (window)
     {
         std::cerr << "Failed to start GL handler: a window has already been \
@@ -78,7 +77,6 @@ int GlHandler::start()
     }
 
     // Initialise GLFW
-
     if (!glfwInit())
     {
         std::cerr << "Failed to initialise GLFW." << std::endl;
@@ -88,19 +86,18 @@ int GlHandler::start()
     glfwSetErrorCallback(glfw_error_callback);
 
     // Create window
-
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, k_gl_version_major);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, k_gl_version_minor);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    // Required for macOS
+    /// Required for macOS
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    // Comply with window manager standards
+    /// Comply with window manager standards
     glfwWindowHint(GLFW_FOCUSED, GL_TRUE);
     glfwWindowHint(GLFW_FOCUSED, GL_FALSE);
 
     window = glfwCreateWindow(k_initial_window_width, k_initial_window_height,
-                                k_title, NULL, NULL);
+                                k_window_title, NULL, NULL);
 
     if (!window)
     {
@@ -112,7 +109,6 @@ int GlHandler::start()
     glfwMakeContextCurrent(window);
 
     // Initialise GLEW to load all OpenGL function pointers
-
     if (!glewInit())
     {
         std::cerr << "Failed to initialise GLEW." << std::endl;
@@ -122,7 +118,6 @@ int GlHandler::start()
     }
 
     // Load shaders
-
     try
     {
         shader_program = new ShaderProgram(vertex_shader_source,
@@ -148,36 +143,30 @@ int GlHandler::start()
     }
 
     // Create buffer and array objects
-
     glGenBuffers(1, &vbo);
     glGenVertexArrays(1, &vao);
     
     // Copy vertex data into VBO
-
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // Link vertex position attributes
-
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
                             (void *) 0);
     glEnableVertexAttribArray(0);
 
     // Link vertex colour attributes
-
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
                             (void *) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
     // Pre-render setup
-
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSwapInterval(1);
     shader_program->use();
 
     // Render
-
     while (!glfwWindowShouldClose(window))
     {
         // Clear framebuffer
@@ -194,7 +183,6 @@ int GlHandler::start()
     }
 
     // Deinitialise GL
-    
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
     delete shader_program;
