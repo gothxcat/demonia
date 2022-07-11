@@ -55,8 +55,8 @@ private:
 
     static GLFWwindow *window;
     static ShaderProgram *shader_program;
-    static GLuint vbo;    // Vertex Buffer Object
-    static GLuint vao;    // Vertex Array Object
+    static GLuint vbo; // Vertex Buffer Object
+    static GLuint vao; // Vertex Array Object
 };
 
 }; // namespace demonia
