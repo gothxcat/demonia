@@ -1,4 +1,4 @@
-// CMake configured header.
+// Demonia, an OpenGL demo.
 // Copyright (C) 2022 Natalie Wiggins
 //
 // This program is free software: you can redistribute it and/or modify
@@ -14,35 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef DEMONIA_SRC_CONFIG_HXX_
-#define DEMONIA_SRC_CONFIG_HXX_
+#include "gl_handler.h"
 
-
-#include <string>
-
-
-namespace demonia
+int main()
 {
-
-
-using namespace std;
-
-
-namespace config
-{
-
-
-const string k_project_name = "@PROJECT_NAME@";
-const unsigned int k_project_version_major = @PROJECT_VERSION_MAJOR@;
-const unsigned int k_project_version_minor = @PROJECT_VERSION_MINOR@;
-const unsigned int k_gl_version_major = @GL_VERSION_MAJOR@;
-const unsigned int k_gl_version_minor = @GL_VERSION_MINOR@;
-
-
-} // namespace config
-
-
-} // namespace demonia
-
-
-#endif // DEMONIA_SRC_CONFIG_HXX_
+    return demonia::GlHandler::start();
+}

@@ -1,4 +1,3 @@
-// GL fragment shader.
 // Copyright (C) 2022 Natalie Wiggins
 //
 // This program is free software: you can redistribute it and/or modify
@@ -14,13 +13,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-R""(
-#version 330 core
-out vec4 foColour;
-in vec3 voColour;
+#ifndef DEMONIA_SRC_VERTEX_H_
+#define DEMONIA_SRC_VERTEX_H_
 
-void main()
+namespace demonia
 {
-    foColour = vec4(voColour, 1.0f);
-}
-)""
+
+// Stores position and colour attributes for a given vertex.
+typedef struct Vertex
+{
+    float x, y, z;
+    float r, g, b;
+} Vertex;
+
+}; // namespace demonia
+
+#endif // DEMONIA_SRC_VERTEX_H_

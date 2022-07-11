@@ -1,4 +1,3 @@
-// Demonia, an OpenGL demo.
 // Copyright (C) 2022 Natalie Wiggins
 //
 // This program is free software: you can redistribute it and/or modify
@@ -14,14 +13,39 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#include "GLHandler.hxx"
+#define GLFW_INCLUDE_NONE
 
+#include "gl_exception.h"
 
-using namespace demonia;
+#include <cstring>
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
-// Entry point
-int main()
+namespace demonia
 {
-    return GLHandler::start();
+
+GlException::GlException(const char info_log[GL_INFO_LOG_LENGTH])
+{
+    strcpy(m_info_log, info_log);
 }
+
+const char *GlException::what() const throw()
+{
+    return m_info_log;
+}
+
+ShaderCompileException::ShaderCompileException(
+        const char info_log[GL_INFO_LOG_LENGTH],
+        GLuint shader_type)
+        : GlException(info_log), m_shader_type{shader_type}
+{
+}
+
+ProgramLinkException::ProgramLinkException(
+        const char info_log[GL_INFO_LOG_LENGTH])
+        : GlException(info_log)
+{
+}
+
+}; // namespace demonia
