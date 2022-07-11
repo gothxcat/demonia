@@ -19,7 +19,7 @@ Shell commands to be run as user are denoted by `$`.
 
 - C++11-compatible compiler with standard library (`gcc` >= 4.8.1)
 - `cmake` >= 3.10
-- `glew` >= 3.3
+- `glew`
 - `glfw` >= 3.3
 
 ### Release
