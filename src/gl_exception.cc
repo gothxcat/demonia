@@ -14,14 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#define GLFW_INCLUDE_NONE
-
-#include "gl_exception.h"
+#include "gl_exception.hh"
 
 #include <cstring>
 
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
 
 namespace demonia
 {
@@ -31,7 +28,7 @@ GlException::GlException(const char info_log[GL_INFO_LOG_LENGTH])
     strcpy(m_info_log, info_log);
 }
 
-const char *GlException::what() const throw()
+const char* GlException::what() const throw()
 {
     return m_info_log;
 }

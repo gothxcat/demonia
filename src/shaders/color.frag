@@ -1,4 +1,4 @@
-// GL fragment shader.
+// GL fragment shader with color I/O.
 // Copyright (C) 2022 Natalie Wiggins
 //
 // This program is free software: you can redistribute it and/or modify
@@ -16,11 +16,11 @@
 
 R""(
 #version 330 core
-out vec4 foColour;
-in vec3 voColour;
+out vec4 foColor;
+in vec3 voColor;
 
 void main()
 {
-    foColour = vec4(voColour, 1.0f);
+    foColor = vec4(voColor, 1.0f);
 }
 )""

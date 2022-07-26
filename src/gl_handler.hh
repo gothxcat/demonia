@@ -13,13 +13,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef DEMONIA_SRC_GL_HANDLER_H_
-#define DEMONIA_SRC_GL_HANDLER_H_
+#ifndef DEMONIA_SRC_GL_HANDLER_HH_
+#define DEMONIA_SRC_GL_HANDLER_HH_
 
 #define GLFW_INCLUDE_NONE
 
-#include "shader.h"
-#include "vertex.h"
+#include "shader.hh"
 
 #include <GLFW/glfw3.h>
 
@@ -34,10 +33,9 @@ public:
     static const unsigned int k_gl_version_minor;
     static const unsigned int k_initial_window_width;
     static const unsigned int k_initial_window_height;
-    static const char *k_window_title;
-    static const char *vertex_shader_source;
-    static const char *fragment_shader_source;
-    static const Vertex vertices[];
+    static const char* k_window_title;
+    static const char* vertex_shader_source;
+    static const char* fragment_shader_source;
 
     // Initialises GL and starts graphics rendering; deinitialises GL upon an
     // exit signal. Returns an exit code.
@@ -46,20 +44,20 @@ public:
 private:
     // Called when GLFW throws an error; logs the error code and description to
     // stderr.
-    static void glfw_error_callback(int error, const char *description)
+    static void glfw_error_callback(int error, const char* description)
             noexcept;
 
     // Called when the GL framebuffer is resized; resizes the GL viewport to
     // the new dimensions of the framebuffer.
-    static void framebuffer_size_callback(GLFWwindow *window, int width,
-                                            int height);
+    static void framebuffer_size_callback(GLFWwindow* window, int width,
+            int height);
 
-    static GLFWwindow *window;
-    static ShaderProgram *shader_program;
+    static GLFWwindow* window;
+    static ShaderProgram* shader_program;
     static GLuint vbo; // Vertex Buffer Object
     static GLuint vao; // Vertex Array Object
 };
 
 }; // namespace demonia
 
-#endif // DEMONIA_SRC_GL_HANDLER_H_
+#endif // DEMONIA_SRC_GL_HANDLER_HH_

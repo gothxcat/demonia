@@ -14,15 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef DEMONIA_SRC_GL_EXCEPTION_H_
-#define DEMONIA_SRC_GL_EXCEPTION_H_
-
-#define GLFW_INCLUDE_NONE
+#ifndef DEMONIA_SRC_GL_EXCEPTION_HH_
+#define DEMONIA_SRC_GL_EXCEPTION_HH_
 
 #include <exception>
 
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
 
 namespace demonia
 {
@@ -35,7 +32,7 @@ public:
     GlException(const char info_log[GL_INFO_LOG_LENGTH]);
     
     // Returns the information log for the failed operation.
-    virtual const char *what() const throw();
+    virtual const char* what() const throw();
 
 protected:
     char m_info_log[GL_INFO_LOG_LENGTH];
@@ -47,7 +44,7 @@ class ShaderCompileException : public GlException
 public:
     // Stores the information log and type of shader.
     ShaderCompileException(const char info_log[GL_INFO_LOG_LENGTH],
-                            GLuint shader_type);
+            GLuint shader_type);
 
     // Returns the type of shader that failed to compile.
     GLuint get_shader_type() const;
@@ -70,4 +67,4 @@ public:
 
 }; // namespace demonia
 
-#endif // DEMONIA_SRC_GL_EXCEPTION_H_
+#endif // DEMONIA_SRC_GL_EXCEPTION_HH_

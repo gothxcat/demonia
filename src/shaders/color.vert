@@ -1,4 +1,4 @@
-// GL vertex shader.
+// GL vertex shader with color I/O.
 // Copyright (C) 2022 Natalie Wiggins
 //
 // This program is free software: you can redistribute it and/or modify
@@ -17,12 +17,12 @@
 R""(
 #version 330 core
 layout (location = 0) in vec3 viPos;
-layout (location = 1) in vec3 viColour;
-out vec3 voColour;
+layout (location = 1) in vec3 viColor;
+out vec3 voColor;
 
 void main()
 {
     gl_Position = vec4(viPos, 1.0);
-    voColour = viColour;
+    voColor = viColor;
 }
 )""

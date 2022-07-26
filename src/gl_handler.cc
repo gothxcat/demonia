@@ -16,10 +16,10 @@
 
 #define GLFW_INCLUDE_NONE
 
-#include "gl_exception.h"
-#include "gl_handler.h"
-#include "shader.h"
-#include "vertex.h"
+#include "gl_exception.hh"
+#include "gl_handler.hh"
+#include "shader.hh"
+#include "vertices.hh"
 
 #include <cstdlib>
 #include <cstring>
@@ -36,32 +36,24 @@ const unsigned int GlHandler::k_gl_version_major = 3;
 const unsigned int GlHandler::k_gl_version_minor = 3;
 const unsigned int GlHandler::k_initial_window_width = 640;
 const unsigned int GlHandler::k_initial_window_height = 480;
-const char *GlHandler::k_window_title = "Demonia";
+const char* GlHandler::k_window_title = "Demonia";
 
-const char *GlHandler::vertex_shader_source =
-#include "shaders/vertex.glsl"
+const char* GlHandler::vertex_shader_source =
+#include "shaders/color.vert"
 ;
 
-const char *GlHandler::fragment_shader_source =
-#include "shaders/fragment.glsl"
+const char* GlHandler::fragment_shader_source =
+#include "shaders/color.frag"
 ;
 
-// 2D triangle
-const Vertex GlHandler::vertices[] = {
-    // x,y,z                r,g,b
-    {  0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f }, // bottom right
-    { -0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f }, // bottom left
-    {  0.0f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f }  // top
-};
-
-GLFWwindow *GlHandler::window;
-ShaderProgram *GlHandler::shader_program;
+GLFWwindow* GlHandler::window;
+ShaderProgram* GlHandler::shader_program;
 GLuint GlHandler::vbo;
 GLuint GlHandler::vao;
 
 // Outputs the string identifying an exception to stderr if the string is not
 // empty.
-inline void log_exception(std::exception &e) noexcept
+inline void log_exception(std::exception& e) noexcept
 {
     if (strlen(e.what()) > 0)
         std::cerr << e.what();
@@ -73,7 +65,7 @@ int GlHandler::start()
     if (window)
     {
         std::cerr << "Failed to start GL handler: a window has already been \
-            created" << std::endl;
+                created" << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -98,7 +90,7 @@ int GlHandler::start()
     glfwWindowHint(GLFW_FOCUSED, GL_FALSE);
 
     window = glfwCreateWindow(k_initial_window_width, k_initial_window_height,
-                                k_window_title, NULL, NULL);
+            k_window_title, NULL, NULL);
 
     if (!window)
     {
@@ -122,7 +114,7 @@ int GlHandler::start()
     try
     {
         shader_program = new ShaderProgram(vertex_shader_source,
-                                        fragment_shader_source);
+                fragment_shader_source);
     }
     catch (ShaderCompileException& e)
     {
@@ -146,22 +138,8 @@ int GlHandler::start()
     // Create buffer and array objects
     glGenBuffers(1, &vbo);
     glGenVertexArrays(1, &vao);
+    vertices_color_2d_triangle.use(vao, vbo);
     
-    // Copy vertex data into VBO
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // Link vertex position attributes
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-                            (void *) 0);
-    glEnableVertexAttribArray(0);
-
-    // Link vertex colour attributes
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-                            (void *) (3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
     // Pre-render setup
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSwapInterval(1);
@@ -193,14 +171,14 @@ int GlHandler::start()
     return EXIT_SUCCESS;
 }
 
-void GlHandler::glfw_error_callback(int error, const char *description)
+void GlHandler::glfw_error_callback(int error, const char* description)
         noexcept
 {
     std::cerr << "GLFW error " << error << ": " << description << std::endl;
 }
 
-void GlHandler::framebuffer_size_callback(GLFWwindow *window, int width,
-                                            int height)
+void GlHandler::framebuffer_size_callback(GLFWwindow* window, int width,
+        int height)
 {
     glViewport(0, 0, width, height);
 }

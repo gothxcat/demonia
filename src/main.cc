@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#include "gl_handler.h"
+#include "gl_handler.hh"
 
 int main()
 {
