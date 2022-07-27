@@ -6,7 +6,7 @@ set(demonia_VERSION_YEAR 2022)
 set(demonia_OUTPUT_NAME demonia)
 
 # Build configuration
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(GL_VERSION_MAJOR 3)
@@ -25,7 +25,8 @@ set(demonia_SOURCES
     gl_exception.cc
     gl_handler.cc
     main.cc
-    shader.cc)
+    shader.cc
+    vertices.cc)
 
 list(TRANSFORM demonia_SOURCES
     PREPEND "${demonia_CODE_SOURCE_DIR}/")

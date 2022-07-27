@@ -1,4 +1,4 @@
-// Defines vertex attributes and creates a set of usable vertices.
+// Vertex attributes and objects for creating usable sets of vertices.
 // Copyright (C) 2022 Natalie Wiggins
 //
 // This program is free software: you can redistribute it and/or modify
@@ -17,71 +17,78 @@
 #ifndef DEMONIA_SRC_VERTICES_HH_
 #define DEMONIA_SRC_VERTICES_HH_
 
-#include <algorithm>
+#include "tuple.hh"
+
 #include <cstddef>
 #include <cstdint>
 #include <initializer_list>
+#include <iostream>
 #include <map>
 #include <sstream>
 #include <stdexcept>
+#include <type_traits>
 #include <vector>
+#include <tuple>
 
 #include <GL/glew.h>
 
 namespace demonia
 {
 
-typedef struct Position
+typedef struct VertexAttribute
 {
-    GLfloat x, y, z;
-} Position;
+    typedef struct Metadata
+    {
+        GLint size;
+        GLenum type;
+        GLboolean normalized;
+    } Metadata;
 
-typedef struct Color
+    static const Metadata metadata;
+} VertexAttribute;
+
+typedef struct Position Position;
+struct Position : public VertexAttribute
 {
-    GLfloat r, g, b;
-} Color;
+    typedef struct Data
+    {
+        GLfloat x, y, z;
+    } Data;
 
-typedef struct PositionColor
+    Position(Data data);
+
+    static const Metadata metadata;
+    Data m_data;
+};
+
+typedef struct Color Color;
+struct Color : public VertexAttribute
 {
-    Position position;
-    Color color;
-} PositionColor;
+    typedef struct Data
+    {
+        GLfloat r, g, b;
+    } Data;
 
-// Arguments to be passed to glVertexAttribPointer for an attribute in a
-// vertex.
-typedef struct VertexAttributeMetadata
+    Color(Data data);
+
+    static const Metadata metadata;
+    Data m_data;
+};
+
+template<typename... Ts>
+struct is_vertex_attribute;
+
+template<typename T, typename... Ts>
+struct is_vertex_attribute<T, Ts...>
 {
-    GLint size;
-    GLenum type;
-    GLboolean normalized;
-} VertexAttributeMetadata;
+    static const bool value = std::is_base_of<VertexAttribute, T>::value
+        && is_vertex_attribute<Ts...>::value;
+};
 
-constexpr VertexAttributeMetadata position_metadata
-    {3, GL_FLOAT, false};
-
-constexpr VertexAttributeMetadata color_metadata
-    {3, GL_FLOAT, false};
-
-// Creates a set of usable vertices.
-template<typename VertexData>
-class Vertices
+template<typename T>
+struct is_vertex_attribute<T>
 {
-public:
-    // Creates a set of vertices from a list of GL metadata for each attribute
-    // per vertex and a list of data for each vertex.
-    Vertices(std::initializer_list<VertexAttributeMetadata> metadata,
-            std::initializer_list<VertexData> data);
-
-    // Copies vertex data into a Vertex Buffer Object, and links and enables
-    // the corresponding attributes in a Vertex Array Object for the set of
-    // vertices to be used in rendering.
-    void use(GLuint vao, GLuint vbo) const noexcept;
-
-private:
-    GLsizei stride = 0;
-    size_t buffer_size;
-    std::vector<VertexData> m_data;
-    std::vector<VertexAttributeMetadata> m_metadata;
+    static const bool value = std::is_base_of<VertexAttribute, T>::value;
 };
 
 const std::map<GLenum, size_t> gl_type_sizes
@@ -99,73 +106,88 @@ const std::map<GLenum, size_t> gl_type_sizes
         {GL_UNSIGNED_INT_2_10_10_10_REV, sizeof(GLuint)},
         {GL_UNSIGNED_INT_10F_11F_11F_REV, sizeof(GLuint)}
     };
- 
-template<typename VertexData>
-Vertices<VertexData>::Vertices(
-        std::initializer_list<VertexAttributeMetadata> metadata,
-        std::initializer_list<VertexData> data)
-        : m_data{data}, m_metadata{metadata}
+
+
+// Creates a usable set of vertices.
+template<typename Attribute0, typename... AttributeRest>
+class Vertices
 {
-    for (auto &attrib : metadata)
+public:
+    typedef Tuple<Attribute0, AttributeRest...> Vertex; 
+
+    // Creates a set of vertices from a list of attribute data tuples.
+    Vertices(std::initializer_list<Vertex> data)
+            : m_data{data}
     {
-        try
+        static_assert(is_vertex_attribute<Attribute0,
+                AttributeRest...>::value,
+                "attributes must be derived from type 'VertexAttribute'");
+
+        metadata = {Attribute0::metadata, AttributeRest::metadata...};
+        for (auto& attrib : metadata)
         {
-            stride += attrib.size * gl_type_sizes.at(attrib.type);
-        }
-        catch (std::out_of_range)
-        {
-            std::stringstream msg;
-            msg << "Failed to initialize vertices: no size associated with GL \
-                    data type '" << attrib.type << "'."; 
-            std::runtime_error(msg.str());
-        }
+            try
+            {
+                stride += attrib.size * gl_type_sizes.at(attrib.type);
+            }
+            catch (std::out_of_range)
+            {
+                std::stringstream msg;
+                msg << "Failed to initialize vertices: no size associated with \
+                        GL data type '" << attrib.type << "'."; 
+                std::runtime_error(msg.str());
+            }
+        }        
+
+        buffer_size = sizeof(Vertex) * data.size();
     }
 
-    buffer_size = sizeof(VertexData) * data.size();
-}
-
-template<typename VertexData>
-void Vertices<VertexData>::use(GLuint vao, GLuint vbo) const noexcept
-{
-    VertexData buffer[buffer_size];
-    std::copy(m_data.begin(), m_data.end(), buffer);
-
-    // Copy data into VBO
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, buffer_size, buffer, GL_STATIC_DRAW); 
-
-    // Link and enable attributes
-    for (int i = 0, ptr = 0; i < m_metadata.size(); ++i)
+    // Copies vertex data into a Vertex Buffer Object, and links and enables
+    // the corresponding attributes in a Vertex Array Object for the set of
+    // vertices to be used in rendering.
+    void use(GLuint vao, GLuint vbo) const noexcept
     {
-        auto& attrib = m_metadata[i];
-        glVertexAttribPointer(i, attrib.size, attrib.type, attrib.normalized,
-                stride, (void*) (intptr_t) ptr);
-        glEnableVertexAttribArray(i);
-        ptr += attrib.size * gl_type_sizes.at(attrib.type);
+        // Copy data into VBO
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, buffer_size, m_data.data(),
+                GL_STATIC_DRAW); 
+
+        // Link and enable attributes
+        for (int i = 0, ptr = 0; i < metadata.size(); ++i)
+        {
+            auto& attrib = metadata[i];
+            glVertexAttribPointer(i, attrib.size, attrib.type,
+                    attrib.normalized, stride, (void*) (intptr_t) ptr);
+            glEnableVertexAttribArray(i);
+            ptr += attrib.size * gl_type_sizes.at(attrib.type);
+        }
+
+        // Unbind VAO for use
+        glBindVertexArray(0);
     }
+    
+private:
+    GLsizei stride = 0;
+    size_t buffer_size;
+    std::vector<Vertex> m_data;
+    std::vector<VertexAttribute::Metadata> metadata;
+};
 
-    glBindVertexArray(0);
-}
-
-// Vertices for a 2D triangle with a position attribute only.
-const Vertices<Position> vertices_2d_triangle(
-    {position_metadata},
-    {
-        // x, y, z
-        {   0.5f, -0.5f, 0.0f }, // bottom right
-        {  -0.5f, -0.5f, 0.0f }, // bottom left
-        {   0.0f,  0.5f, 0.0f }  // top
+// Vertices for a 2D triangle with only a position attribute.
+const Vertices<Position> vertices_2d_triangle({
+        //  x, y, z
+        {{{  0.5f, -0.5f, 0.0f }}}, // bottom right
+        {{{ -0.5f, -0.5f, 0.0f }}}, // bottom left
+        {{{  0.0f,  0.5f, 0.0f }}}  // top
     });
 
 // Vertices for a 2D triangle with position and color attributes.
-const Vertices<PositionColor> vertices_color_2d_triangle(
-    {position_metadata, color_metadata},
-    {
-        // x, y, z                    r, g, b
-        {{  0.5f, -0.5f, 0.0f },    { 1.0f, 0.0f, 0.0f }}, // bottom right
-        {{ -0.5f, -0.5f, 0.0f },    { 0.0f, 1.0f, 0.0f }}, // bottom left
-        {{  0.0f,  0.5f, 0.0f },    { 0.0f, 0.0f, 1.0f }}  // top
+const Vertices<Position, Color> vertices_color_2d_triangle({
+        //  x, y, z                    r, g, b
+        {{{  0.5f, -0.5f, 0.0f }},  {{ 1.0f, 0.0f, 0.0f }}}, // bottom right
+        {{{ -0.5f, -0.5f, 0.0f }},  {{ 0.0f, 1.0f, 0.0f }}}, // bottom left
+        {{{  0.0f,  0.5f, 0.0f }},  {{ 0.0f, 0.0f, 1.0f }}}  // top
     });
 
 }; // namespace demonia

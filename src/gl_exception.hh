@@ -25,6 +25,7 @@ namespace demonia
 {
 
 // Exception raised when a GL operation has failed.
+typedef class GlException GlException;
 class GlException : public std::exception
 {
 public:
@@ -39,26 +40,26 @@ protected:
 };
 
 // Exception raised when a shader has failed to compile.
+typedef class ShaderCompileException ShaderCompileException;
 class ShaderCompileException : public GlException
 {
 public:
     // Stores the information log and type of shader.
     ShaderCompileException(const char info_log[GL_INFO_LOG_LENGTH],
-            GLuint shader_type);
+                           GLuint shader_type);
 
     // Returns the type of shader that failed to compile.
-    GLuint get_shader_type() const;
+    inline GLuint get_shader_type() const
+    {
+        return m_shader_type;
+    }
 
 protected:
     GLuint m_shader_type;
 };
 
-inline GLuint ShaderCompileException::get_shader_type() const
-{
-    return m_shader_type;
-}
-
 // Exception raised when an operation to link a program has failed.
+typedef class ProgramLinkException ProgramLinkException;
 class ProgramLinkException : public GlException
 {
 public:

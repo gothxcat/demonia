@@ -26,7 +26,7 @@ namespace demonia
 {
 
 // Handles GL initialisation and rendering.
-class GlHandler
+typedef class GlHandler
 {
 public:
     static const unsigned int k_gl_version_major;
@@ -45,18 +45,18 @@ private:
     // Called when GLFW throws an error; logs the error code and description to
     // stderr.
     static void glfw_error_callback(int error, const char* description)
-            noexcept;
+        noexcept;
 
     // Called when the GL framebuffer is resized; resizes the GL viewport to
     // the new dimensions of the framebuffer.
     static void framebuffer_size_callback(GLFWwindow* window, int width,
-            int height);
+                                          int height);
 
     static GLFWwindow* window;
     static ShaderProgram* shader_program;
     static GLuint vbo; // Vertex Buffer Object
     static GLuint vao; // Vertex Array Object
-};
+} GlHandler;
 
 }; // namespace demonia
 

@@ -17,7 +17,7 @@ Shell commands to be run as user are denoted by `$`.
 
 ### Requirements
 
-- C++11-compatible compiler with standard library (`gcc` >= 4.8.1)
+- C++17-compatible compiler with standard library (`gcc` >= 8)
 - `cmake` >= 3.10
 - `glew`
 - `glfw` >= 3.3

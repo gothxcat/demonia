@@ -65,7 +65,7 @@ int GlHandler::start()
     if (window)
     {
         std::cerr << "Failed to start GL handler: a window has already been \
-                created" << std::endl;
+                      created" << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -90,7 +90,7 @@ int GlHandler::start()
     glfwWindowHint(GLFW_FOCUSED, GL_FALSE);
 
     window = glfwCreateWindow(k_initial_window_width, k_initial_window_height,
-            k_window_title, NULL, NULL);
+                              k_window_title, NULL, NULL);
 
     if (!window)
     {
@@ -114,7 +114,7 @@ int GlHandler::start()
     try
     {
         shader_program = new ShaderProgram(vertex_shader_source,
-                fragment_shader_source);
+                                           fragment_shader_source);
     }
     catch (ShaderCompileException& e)
     {
@@ -172,13 +172,13 @@ int GlHandler::start()
 }
 
 void GlHandler::glfw_error_callback(int error, const char* description)
-        noexcept
+    noexcept
 {
     std::cerr << "GLFW error " << error << ": " << description << std::endl;
 }
 
 void GlHandler::framebuffer_size_callback(GLFWwindow* window, int width,
-        int height)
+                                          int height)
 {
     glViewport(0, 0, width, height);
 }

@@ -22,7 +22,7 @@ namespace demonia
 {
 
 // Creates a portable, compiled and linked shader program.
-class ShaderProgram
+typedef class ShaderProgram
 {
 public:
     // Compiles a vertex and fragment shader from their GLSL source code and
@@ -34,11 +34,17 @@ public:
     ~ShaderProgram();
 
     // Use/activate the shader program for GL operations.
-    void use() const noexcept;
+    inline void use() const noexcept
+    {
+        glUseProgram(id);
+    }
 
     // Modifies a uniform value shared between shaders.
     template<typename T>
-    void set_uniform(const char* name, T value) const noexcept;
+    inline void set_uniform(const char* name, T value) const noexcept
+    {
+        glUniform1i(glGetUniformLocation(id, name), value);
+    }
 
 private:
     // Compiles a shader of a given type from its GLSL source code and returns
@@ -46,19 +52,7 @@ private:
     static GLuint compile_shader(const char *src, GLenum type);
 
     unsigned int id;
-};
-
-inline void ShaderProgram::use() const noexcept
-{
-    glUseProgram(id);
-}
-
-template<typename T>
-inline void ShaderProgram::set_uniform(const char *name, T value) const
-        noexcept
-{
-    glUniform1i(glGetUniformLocation(id, name), value);
-}
+} ShaderProgram;
 
 }; // namespace demonia
 
