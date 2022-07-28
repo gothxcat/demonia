@@ -38,11 +38,11 @@ const unsigned int GlHandler::k_initial_window_width = 640;
 const unsigned int GlHandler::k_initial_window_height = 480;
 const char* GlHandler::k_window_title = "Demonia";
 
-const char* GlHandler::vertex_shader_source =
+const char* GlHandler::vertex_shader_src =
 #include "shaders/color.vert"
 ;
 
-const char* GlHandler::fragment_shader_source =
+const char* GlHandler::fragment_shader_src =
 #include "shaders/color.frag"
 ;
 
@@ -113,8 +113,8 @@ int GlHandler::start()
     // Load shaders
     try
     {
-        shader_program = new ShaderProgram(vertex_shader_source,
-                                           fragment_shader_source);
+        shader_program = new ShaderProgram(vertex_shader_src,
+                                           fragment_shader_src);
     }
     catch (ShaderCompileException& e)
     {

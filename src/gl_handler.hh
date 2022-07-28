@@ -34,8 +34,8 @@ public:
     static const unsigned int k_initial_window_width;
     static const unsigned int k_initial_window_height;
     static const char* k_window_title;
-    static const char* vertex_shader_source;
-    static const char* fragment_shader_source;
+    static const char* vertex_shader_src;
+    static const char* fragment_shader_src;
 
     // Initialises GL and starts graphics rendering; deinitialises GL upon an
     // exit signal. Returns an exit code.

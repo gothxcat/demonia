@@ -119,9 +119,8 @@ public:
     Vertices(std::initializer_list<Vertex> data)
             : m_data{data}
     {
-        static_assert(is_vertex_attribute<Attribute0,
-                AttributeRest...>::value,
-                "attributes must be derived from type 'VertexAttribute'");
+        static_assert(is_vertex_attribute<Attribute0, AttributeRest...>::value,
+                      "attributes must be derived from type 'VertexAttribute'");
 
         metadata = {Attribute0::metadata, AttributeRest::metadata...};
         for (auto& attrib : metadata)
@@ -151,14 +150,14 @@ public:
         glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, buffer_size, m_data.data(),
-                GL_STATIC_DRAW); 
+                     GL_STATIC_DRAW); 
 
         // Link and enable attributes
         for (int i = 0, ptr = 0; i < metadata.size(); ++i)
         {
             auto& attrib = metadata[i];
             glVertexAttribPointer(i, attrib.size, attrib.type,
-                    attrib.normalized, stride, (void*) (intptr_t) ptr);
+                                  attrib.normalized, stride, (void*) (intptr_t) ptr);
             glEnableVertexAttribArray(i);
             ptr += attrib.size * gl_type_sizes.at(attrib.type);
         }
