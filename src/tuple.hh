@@ -144,9 +144,7 @@ public:
 
     template<typename T,
              typename = typename std::enable_if<
-                    std::is_constructible<ValueType_, T>::value
-                >::type
-            >
+                    std::is_constructible<ValueType_, T>::value>::type>
     explicit TupleLeaf(T&& t)
             : ValueType_(std::forward<T>(t))
     {
@@ -199,7 +197,7 @@ template<size_t Start_, size_t... Indexes_, size_t End_>
 struct MakeTupleIndexesImpl<Start_, TupleIndexes<Indexes_...>, End_>
 {
     typedef typename MakeTupleIndexesImpl<Start_ + 1,
-            TupleIndexes<Indexes_..., Start_>, End_>::type type;
+                TupleIndexes<Indexes_..., Start_>, End_>::type type;
 };
 
 template<size_t End_, size_t... Indexes_>
@@ -227,26 +225,22 @@ struct TupleTypes
 // TupleSize
 
 template<typename T_>
-struct TupleSize
-        : public std::tuple_size<T_>
+struct TupleSize : public std::tuple_size<T_>
 {
 };
 
 template<typename T_>
-struct TupleSize<const T_>
-        : public TupleSize<T_>
+struct TupleSize<const T_> : public TupleSize<T_>
 {
 };
 
 template<typename T_>
-struct TupleSize<volatile T_>
-        : public TupleSize<T_>
+struct TupleSize<volatile T_> : public TupleSize<T_>
 {
 };
 
 template<typename T_>
-struct TupleSize<const volatile T_>
-        : public TupleSize<T_>
+struct TupleSize<const volatile T_> : public TupleSize<T_>
 {
 };
 
@@ -302,7 +296,7 @@ class TupleElement<I_, const Tuple<Ts_...>>
 {
 public:
     typedef typename std::add_const<typename TupleElement<I_, TupleTypes<Ts_...>
-            >::type>::type type;
+                >::type>::type type;
 };
 
 template<size_t I_, typename... Ts_>
@@ -310,15 +304,15 @@ class TupleElement<I_, volatile Tuple<Ts_...>>
 {
 public:
     typedef typename std::add_volatile<typename TupleElement<I_,
-            TupleTypes<Ts_...>>::type>::type type;
+                TupleTypes<Ts_...>>::type>::type type;
 };
 
 template<size_t I_, typename... Ts_>
 class TupleElement<I_, const volatile Tuple<Ts_...>>
 {
 public:
-    typedef typename std::add_cv<typename TupleElement<I_, TupleTypes<Ts_...>>
-            ::type>::type type;
+    typedef typename std::add_cv<typename TupleElement<I_, TupleTypes<Ts_...>
+                >::type>::type type;
 };
 
 // MakeTupleTypes
@@ -331,12 +325,12 @@ struct MakeTupleTypesImpl<TupleTypes<Types_...>, Tuple_, Start_, End_>
 {
     typedef typename std::remove_reference<Tuple_>::type TupleType;
     typedef typename MakeTupleTypesImpl<TupleTypes<Types_...,
-            typename std::conditional<std::is_lvalue_reference<Tuple_>::value,
-                // append ref if Tuple_ is ref
-                typename TupleElement<Start_, TupleType>::type&,
-                // append non-ref otherwise
-                typename TupleElement<Start_, TupleType>::type>::type>,
-            Tuple_, Start_ + 1, End_>::type type;
+                typename std::conditional<std::is_lvalue_reference<Tuple_>::value,
+                    // append ref if Tuple_ is ref
+                    typename TupleElement<Start_, TupleType>::type&,
+                    // append non-ref otherwise
+                    typename TupleElement<Start_, TupleType>::type>::type>,
+                Tuple_, Start_ + 1, End_>::type type;
 };
 
 template<typename... Types_, typename Tuple_, size_t End_>
@@ -385,10 +379,9 @@ struct TupleImpl<TupleIndexes<Indexes_...>, Ts_...>
 
     template<typename OtherTuple>
     TupleImpl(OtherTuple&& t)
-            : TupleLeaf<Indexes_, Ts_>(std::forward<
-                    typename TupleElement<Indexes_,
-                    typename MakeTupleTypes<OtherTuple>::type>::type
-                    >(std::get<Indexes_>(t)))...
+            : TupleLeaf<Indexes_, Ts_>(std::forward<typename TupleElement<Indexes_,
+                        typename MakeTupleTypes<OtherTuple>::type>::type>(
+                    std::get<Indexes_>(t)))...
     {
     }
 
@@ -397,8 +390,8 @@ struct TupleImpl<TupleIndexes<Indexes_...>, Ts_...>
     {
         swallow(TupleLeaf<Indexes_, Ts_>::operator=(std::forward<
                     typename TupleElement<Indexes_,
-                    typename MakeTupleTypes<OtherTuple>::type>::type
-                    >(std::get<Indexes_>(t)))...);
+                        typename MakeTupleTypes<OtherTuple>::type>::type>(
+                    std::get<Indexes_>(t)))...);
         return *this;
     }
 
@@ -419,64 +412,54 @@ struct TupleImpl<TupleIndexes<Indexes_...>, Ts_...>
 // TupleLike
 
 template<typename T_>
-struct TupleLike
-        : public std::false_type
+struct TupleLike : public std::false_type
 {
 };
 
 template<typename T_>
-struct TupleLike<const T_>
-        : public TupleLike<T_>
+struct TupleLike<const T_> : public TupleLike<T_>
 {
 };
 
 template<typename T_>
-struct TupleLike<volatile T_>
-        : public TupleLike<T_>
+struct TupleLike<volatile T_> : public TupleLike<T_>
 {
 };
 
 template<typename T_>
-struct TupleLike<const volatile T_>
-        : public TupleLike<T_>
+struct TupleLike<const volatile T_> : public TupleLike<T_>
 {
 };
 
 template<typename... Ts_>
-struct TupleLike<Tuple<Ts_...>>
-        : public std::true_type
+struct TupleLike<Tuple<Ts_...>> : public std::true_type
 {
 };
 
 template<typename... Ts_>
-struct TupleLike<TupleTypes<Ts_...>>
-        : public std::true_type
+struct TupleLike<TupleTypes<Ts_...>> : public std::true_type
 {
 };
 
 template<typename... Ts_>
-struct TupleLike<std::tuple<Ts_...>>
-        : public std::true_type
+struct TupleLike<std::tuple<Ts_...>> : public std::true_type
 {
 };
 
 template<typename First_, typename Second_>
-struct TupleLike<std::pair<First_, Second_>>
-        : public std::true_type
+struct TupleLike<std::pair<First_, Second_>> : public std::true_type
 {
 };
 
 template<typename T_, size_t N_>
-struct TupleLike<std::array<T_, N_>>
-        : public std::true_type
+struct TupleLike<std::array<T_, N_>> : public std::true_type
 {
 };
 
 // TupleConvertible
 
 template<bool IsSameSize_, typename From_, typename To_>
-struct TupleConvertibleImpl
-        : public std::false_type
+struct TupleConvertibleImpl : public std::false_type
 {
 };
 
@@ -500,8 +483,7 @@ struct TupleConvertibleImpl<true, TupleTypes<>, TupleTypes<>>
 template<typename From_, typename To_,
          bool = TupleLike<typename std::remove_reference<From_>::type>::value,
          bool = TupleLike<typename std::remove_reference<To_>::type>::value>
-struct TupleConvertible
-        : public std::false_type
+struct TupleConvertible : public std::false_type
 {
 };
 
@@ -518,8 +500,7 @@ struct TupleConvertible<From_, To_, true, true>
 // TupleAssignable
 
 template<bool IsSameSize_, typename To_, typename From_>
-struct TupleAssignableImpl
-        : public std::false_type
+struct TupleAssignableImpl : public std::false_type
 {
 };
 
@@ -543,8 +524,7 @@ struct TupleAssignableImpl<true, TupleTypes<>, TupleTypes<>>
 template<typename To_, typename From_,
          bool = TupleLike<typename std::remove_reference<To_>::type>::value,
          bool = TupleLike<typename std::remove_reference<From_>::type>::value>
-struct TupleAssignable
-        : public std::false_type
+struct TupleAssignable : public std::false_type
 {
 };
 
@@ -644,8 +624,8 @@ public:
                     typename detail::MakeTupleTypes<Tuple<Us...>>::type,
                     typename detail::MakeTupleTypes<Tuple,
                         sizeof...(Us) < sizeof...(Ts_)
-                            ? sizeof...(Us)
-                            : sizeof...(Ts_)>::type>::value,
+                        ? sizeof...(Us)
+                        : sizeof...(Ts_)>::type>::value,
                 bool>::type = false>
     explicit Tuple(Us&&... u)
             : impl_(typename detail::MakeTupleIndexes<sizeof...(Us)>::type(),
@@ -682,7 +662,7 @@ public:
 
 private:
     typedef detail::TupleImpl<
-            typename detail::MakeTupleIndexes<sizeof...(Ts_)>::type, Ts_...>
+                typename detail::MakeTupleIndexes<sizeof...(Ts_)>::type, Ts_...>
             Impl;
     Impl impl_;
 
