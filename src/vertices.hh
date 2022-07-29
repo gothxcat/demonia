@@ -175,7 +175,8 @@ public:
         {
             auto& attrib = metadata[i];
             glVertexAttribPointer(i, attrib.size, attrib.type,
-                                  attrib.normalized, stride, (void*) (intptr_t) ptr);
+                                  attrib.normalized, stride,
+                                  (void*) static_cast<intptr_t>(ptr));
             glEnableVertexAttribArray(i);
             ptr += attrib.size * gl_type_sizes.at(attrib.type);
         }
