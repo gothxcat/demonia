@@ -82,11 +82,11 @@ int GlHandler::start()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, k_gl_version_major);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, k_gl_version_minor);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef __APPLE__
     /// Required for macOS
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
     /// Comply with window manager standards
-    glfwWindowHint(GLFW_FOCUSED, GL_TRUE);
     glfwWindowHint(GLFW_FOCUSED, GL_FALSE);
 
     window = glfwCreateWindow(k_initial_window_width, k_initial_window_height,
@@ -139,7 +139,7 @@ int GlHandler::start()
     glGenBuffers(1, &vbo);
     glGenVertexArrays(1, &vao);
     vertices_color_2d_triangle.use(vao, vbo);
-    
+
     // Pre-render setup
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSwapInterval(1);

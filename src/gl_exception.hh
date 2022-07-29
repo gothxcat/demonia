@@ -31,7 +31,7 @@ class GlException : public std::exception
 public:
     // Stores the information log for the failed operation.
     GlException(const char info_log[GL_INFO_LOG_LENGTH]);
-    
+
     // Returns the information log for the failed operation.
     virtual const char* what() const throw();
 

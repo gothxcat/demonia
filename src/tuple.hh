@@ -668,11 +668,11 @@ private:
 
     template<size_t I, typename... Ts>
     friend typename tuple_element<I, Tuple<Ts...>>::type& get(Tuple<Ts...>& t);
-    
+
     template<size_t I, typename... Ts>
     friend const typename tuple_element<I, Tuple<Ts...>>::type& get(
             const Tuple<Ts...>& t);
-    
+
     template<size_t I, typename... Ts>
     friend typename tuple_element<I, Tuple<Ts...>>::type&& get(
             Tuple<Ts...>&& t);

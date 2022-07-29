@@ -28,7 +28,6 @@
 #include <stdexcept>
 #include <type_traits>
 #include <vector>
-#include <tuple>
 
 #include <GL/glew.h>
 
@@ -107,17 +106,33 @@ const std::map<GLenum, size_t> gl_type_sizes
         {GL_UNSIGNED_INT_10F_11F_11F_REV, sizeof(GLuint)}
     };
 
+// Expected usage patterns of data stores. Castable to GLenum.
+enum class GlUsage
+{
+    STREAM_DRAW = GL_STREAM_DRAW,
+    STREAM_READ = GL_STREAM_READ,
+    STREAM_COPY = GL_STREAM_COPY,
+    STATIC_DRAW = GL_STATIC_DRAW,
+    STATIC_READ = GL_STATIC_READ,
+    STATIC_COPY = GL_STATIC_COPY,
+    DYNAMIC_DRAW = GL_DYNAMIC_DRAW,
+    DYNAMIC_READ = GL_DYNAMIC_READ,
+    DYNAMIC_COPY = GL_DYNAMIC_COPY
+};
 
 // Creates a usable set of vertices.
 template<typename Attribute0, typename... AttributeRest>
 class Vertices
 {
 public:
-    typedef Tuple<Attribute0, AttributeRest...> Vertex; 
+    typedef Tuple<Attribute0, AttributeRest...> Vertex;
 
-    // Creates a set of vertices from a list of attribute data tuples.
-    Vertices(std::initializer_list<Vertex> data)
-            : m_data{data}
+    // Creates a set of vertices from a list of attribute data tuples and
+    // an optional list of indices describing the order in which the vertices
+    // should be rendered.
+    Vertices(std::initializer_list<Vertex> data,
+             std::initializer_list<GLuint> indices = {})
+            : m_data{data}, m_indices{indices}
     {
         static_assert(is_vertex_attribute<Attribute0, AttributeRest...>::value,
                       "attributes must be derived from type 'VertexAttribute'");
@@ -133,26 +148,28 @@ public:
             {
                 std::stringstream msg;
                 msg << "Failed to initialize vertices: no size associated with \
-                        GL data type '" << attrib.type << "'."; 
+                        GL data type '" << attrib.type << "'.";
                 std::runtime_error(msg.str());
             }
-        }        
+        }
 
         buffer_size = sizeof(Vertex) * data.size();
     }
 
     // Copies vertex data into a Vertex Buffer Object, and links and enables
     // the corresponding attributes in a Vertex Array Object for the set of
-    // vertices to be used in rendering.
-    void use(GLuint vao, GLuint vbo) const noexcept
+    // vertices to be used in rendering. The expected usage pattern of the
+    // data store may optionally be specified.
+    void use(GLuint vao, GLuint vbo, GlUsage usage = USAGE_DEFAULT) const
+        noexcept
     {
         // Copy data into VBO
-        glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, buffer_size, m_data.data(),
-                     GL_STATIC_DRAW); 
+                     static_cast<GLenum>(usage));
 
         // Link and enable attributes
+        glBindVertexArray(vao);
         for (int i = 0, ptr = 0; i < metadata.size(); ++i)
         {
             auto& attrib = metadata[i];
@@ -165,11 +182,28 @@ public:
         // Unbind VAO for use
         glBindVertexArray(0);
     }
-    
+
+    // Copies vertex data into a Vertex Buffer Object, links and enables
+    // the corresponding attributes in a Vertex Array Object for the set of
+    // vertices to be used in rendering, and stores the indices describing
+    // the rendering order in an Element Buffer Object. The expected usage
+    // pattern of the data store may optionally be specified.
+    void use(GLuint vao, GLuint vbo, GLuint ebo, GlUsage usage = USAGE_DEFAULT)
+        const noexcept
+    {
+        use(vao, vbo, usage);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indices),
+                     m_indices.data(), static_cast<GLenum>(usage));
+    }
+
+    static constexpr GlUsage USAGE_DEFAULT = GlUsage::STATIC_DRAW;
+
 private:
     GLsizei stride = 0;
     size_t buffer_size;
     std::vector<Vertex> m_data;
+    std::vector<GLuint> m_indices;
     std::vector<VertexAttribute::Metadata> metadata;
 };
 
