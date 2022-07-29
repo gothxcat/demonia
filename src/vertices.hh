@@ -121,11 +121,11 @@ enum class GlUsage
 };
 
 // Creates a usable set of vertices.
-template<typename Attribute0, typename... AttributeRest>
+template<typename AttributeFirst, typename... AttributeRest>
 class Vertices
 {
 public:
-    typedef Tuple<Attribute0, AttributeRest...> Vertex;
+    typedef Tuple<AttributeFirst, AttributeRest...> Vertex;
 
     // Creates a set of vertices from a list of attribute data tuples and
     // an optional list of indices describing the order in which the vertices
@@ -134,10 +134,11 @@ public:
              std::initializer_list<GLuint> indices = {})
             : m_data{data}, m_indices{indices}
     {
-        static_assert(is_vertex_attribute<Attribute0, AttributeRest...>::value,
+        static_assert(is_vertex_attribute<AttributeFirst, AttributeRest...
+                                         >::value,
                       "attributes must be derived from type 'VertexAttribute'");
 
-        metadata = {Attribute0::metadata, AttributeRest::metadata...};
+        metadata = {AttributeFirst::metadata, AttributeRest::metadata...};
         for (auto& attrib : metadata)
         {
             try

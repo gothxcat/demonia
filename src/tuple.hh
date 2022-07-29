@@ -463,12 +463,12 @@ struct TupleConvertibleImpl : public std::false_type
 {
 };
 
-template<typename From0_, typename... FromRest_,
-         typename To0_, typename... ToRest_>
-struct TupleConvertibleImpl<true, TupleTypes<From0_, FromRest_...>,
-            TupleTypes<To0_, ToRest_...>>
+template<typename FromFirst_, typename... FromRest_,
+         typename ToFirst_, typename... ToRest_>
+struct TupleConvertibleImpl<true, TupleTypes<FromFirst_, FromRest_...>,
+            TupleTypes<ToFirst_, ToRest_...>>
         : public std::integral_constant<bool,
-            std::is_convertible<From0_, To0_>::value
+            std::is_convertible<FromFirst_, ToFirst_>::value
             && TupleConvertibleImpl<true, TupleTypes<FromRest_...>,
                 TupleTypes<ToRest_...>>::value>
 {
