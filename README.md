@@ -5,7 +5,7 @@ An OpenGL demo.
 ## Tested Platforms
 
 - Arch Linux x86_64
-    - Kernel version 5.18.6, Mesa OpenGL backend, Wayland compositor
+    - Linux 5.18.12, Mesa, Wayland
 
 ## Requirements
 
